@@ -1,0 +1,217 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from datetime import datetime
+from sklearn.externals import joblib
+from sklearn.model_selection import KFold, train_test_split, GridSearchCV
+from sklearn import metrics
+import xgboost as xgb
+from sklearn.feature_selection import SelectFromModel
+from sklearn.linear_model import LassoCV
+import TransformByDOW
+
+print "loading model ..........."
+xgb_model = joblib.load("train_xgb_model.m")
+
+print "create the part dataset of predicting ........."
+rng = pd.date_range('9/1/2016', '9/30/2016')
+predicteData = pd.DataFrame(rng, columns=['predict_date'])
+def addDayOfWeek(x):
+    return x.weekday() +1
+predicteData['day_of_week'] = predicteData.predict_date.apply(addDayOfWeek)
+
+print "loading dataset .............." 
+handledataset = pd.read_csv(u'/home/haven/Tianchi_power/Tianchi_power__boxhandle1_DayOfWeek.csv')
+groupbydataset = TransformByDOW.transformByDayOfWeek()
+groupbydataset.drop('level_2', axis=1,inplace=True)
+
+print "transform date to datetime .............."
+handledataset.record_date = pd.to_datetime(handledataset.record_date)
+
+print "select features about 1st week............."
+features1 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*71, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*83, unit='D')))]
+features1_MeanStdSum = features1.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
+features1_MeanStdSum['power_rate'] = features1_MeanStdSum.power_sum / features1_MeanStdSum.power_sum.sum()
+features1_DOW_MeanStdSum = features1.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
+features1_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index()
+features1_DOW_MeanStdSumAllsum = features1_DOW_MeanStdSum.merge(features1_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index(), on='day_of_week', how='left', copy=True)
+features1_DOW_MeanStdSumAllsum['DOW_powaer_rate'] = features1_DOW_MeanStdSumAllsum.DOW_power_sum / features1_DOW_MeanStdSumAllsum.DOW_allsum
+features1_mergeDataset = pd.merge(features1_DOW_MeanStdSumAllsum, features1_MeanStdSum, on='user_id', how='left')
+
+features1_collist = list(groupbydataset.columns)
+for i in range(71,83):
+    features1_collist.remove(i)
+features1_collist.remove('user_id')
+features1_collist.remove('day_of_week')
+
+features1_mergeDataset_add = pd.merge(features1_mergeDataset,groupbydataset.drop(features1_collist, axis=1),on=['user_id', 'day_of_week'], how='left')
+#test_mergeDataset_add = test_mergeDataset
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_power_std', 'DOW_powaer_rate', 'power_mean', 'power_std', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_powaer_rate', 'power_mean', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
+features1_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
+
+features1_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*87, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*88, unit='D')))]
+final_features1 = pd.merge(features1_mergeDataset_add,features1_Y,on='day_of_week', how='left')
+
+
+
+print "select features about 2st week............."
+features2 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*72, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*84, unit='D')))]
+features2_MeanStdSum = features2.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
+features2_MeanStdSum['power_rate'] = features2_MeanStdSum.power_sum / features2_MeanStdSum.power_sum.sum()
+features2_DOW_MeanStdSum = features2.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
+features2_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index()
+features2_DOW_MeanStdSumAllsum = features2_DOW_MeanStdSum.merge(features2_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index(), on='day_of_week', how='left', copy=True)
+features2_DOW_MeanStdSumAllsum['DOW_powaer_rate'] = features2_DOW_MeanStdSumAllsum.DOW_power_sum / features2_DOW_MeanStdSumAllsum.DOW_allsum
+features2_mergeDataset = pd.merge(features2_DOW_MeanStdSumAllsum, features2_MeanStdSum, on='user_id', how='left')
+
+features2_collist = list(groupbydataset.columns)
+for i in range(72,84):
+    features2_collist.remove(i)
+features2_collist.remove('user_id')
+features2_collist.remove('day_of_week')
+
+features2_mergeDataset_add = pd.merge(features2_mergeDataset,groupbydataset.drop(features2_collist, axis=1),on=['user_id', 'day_of_week'], how='left')
+#test_mergeDataset_add = test_mergeDataset
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_power_std', 'DOW_powaer_rate', 'power_mean', 'power_std', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_powaer_rate', 'power_mean', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
+features2_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
+
+features2_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*88, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*89, unit='D')))]
+final_features2 = pd.merge(features2_mergeDataset_add,features2_Y,on='day_of_week', how='left')
+
+
+
+print "select features about 3st week............."
+features3 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*73, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*85, unit='D')))]
+features3_MeanStdSum = features3.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
+features3_MeanStdSum['power_rate'] = features3_MeanStdSum.power_sum / features3_MeanStdSum.power_sum.sum()
+features3_DOW_MeanStdSum = features3.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
+features3_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index()
+features3_DOW_MeanStdSumAllsum = features3_DOW_MeanStdSum.merge(features3_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index(), on='day_of_week', how='left', copy=True)
+features3_DOW_MeanStdSumAllsum['DOW_powaer_rate'] = features3_DOW_MeanStdSumAllsum.DOW_power_sum / features3_DOW_MeanStdSumAllsum.DOW_allsum
+features3_mergeDataset = pd.merge(features3_DOW_MeanStdSumAllsum, features3_MeanStdSum, on='user_id', how='left')
+
+features3_collist = list(groupbydataset.columns)
+for i in range(73,85):
+    features3_collist.remove(i)
+features3_collist.remove('user_id')
+features3_collist.remove('day_of_week')
+
+features3_mergeDataset_add = pd.merge(features3_mergeDataset,groupbydataset.drop(features3_collist, axis=1),on=['user_id', 'day_of_week'], how='left')
+#test_mergeDataset_add = test_mergeDataset
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_power_std', 'DOW_powaer_rate', 'power_mean', 'power_std', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_powaer_rate', 'power_mean', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
+features3_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
+
+features3_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*89, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*90, unit='D')))]
+final_features3 = pd.merge(features3_mergeDataset_add,features3_Y,on='day_of_week', how='left')
+
+
+
+print "select features about 4st week............."
+features4 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*74, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*86, unit='D')))]
+features4_MeanStdSum = features4.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
+features4_MeanStdSum['power_rate'] = features4_MeanStdSum.power_sum / features4_MeanStdSum.power_sum.sum()
+features4_DOW_MeanStdSum = features4.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
+features4_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index()
+features4_DOW_MeanStdSumAllsum = features4_DOW_MeanStdSum.merge(features4_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index(), on='day_of_week', how='left', copy=True)
+features4_DOW_MeanStdSumAllsum['DOW_powaer_rate'] = features4_DOW_MeanStdSumAllsum.DOW_power_sum / features4_DOW_MeanStdSumAllsum.DOW_allsum
+features4_mergeDataset = pd.merge(features4_DOW_MeanStdSumAllsum, features4_MeanStdSum, on='user_id', how='left')
+
+features4_collist = list(groupbydataset.columns)
+for i in range(74,86):
+    features4_collist.remove(i)
+features4_collist.remove('user_id')
+features4_collist.remove('day_of_week')
+
+features4_mergeDataset_add = pd.merge(features4_mergeDataset,groupbydataset.drop(features4_collist, axis=1),on=['user_id', 'day_of_week'], how='left')
+#test_mergeDataset_add = test_mergeDataset
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_power_std', 'DOW_powaer_rate', 'power_mean', 'power_std', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_powaer_rate', 'power_mean', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
+features4_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
+
+features4_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*90, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*91, unit='D')))]
+final_features4 = pd.merge(features4_mergeDataset_add,features4_Y,on='day_of_week', how='left')
+
+
+
+print "select features about 5st week............."
+features5 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*75, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*87, unit='D')))]
+features5_MeanStdSum = features5.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
+features5_MeanStdSum['power_rate'] = features5_MeanStdSum.power_sum / features5_MeanStdSum.power_sum.sum()
+features5_DOW_MeanStdSum = features5.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
+features5_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index()
+features5_DOW_MeanStdSumAllsum = features5_DOW_MeanStdSum.merge(features5_DOW_MeanStdSum.groupby('day_of_week')['DOW_power_sum'].agg({'DOW_allsum':sum}).reset_index(), on='day_of_week', how='left', copy=True)
+features5_DOW_MeanStdSumAllsum['DOW_powaer_rate'] = features5_DOW_MeanStdSumAllsum.DOW_power_sum / features5_DOW_MeanStdSumAllsum.DOW_allsum
+features5_mergeDataset = pd.merge(features5_DOW_MeanStdSumAllsum, features5_MeanStdSum, on='user_id', how='left')
+
+features5_collist = list(groupbydataset.columns)
+for i in range(75,87):
+    features5_collist.remove(i)
+features5_collist.remove('user_id')
+features5_collist.remove('day_of_week')
+
+features5_mergeDataset_add = pd.merge(features5_mergeDataset,groupbydataset.drop(features5_collist, axis=1),on=['user_id', 'day_of_week'], how='left')
+#test_mergeDataset_add = test_mergeDataset
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_power_std', 'DOW_powaer_rate', 'power_mean', 'power_std', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_power_mean', 'DOW_powaer_rate', 'power_mean', 'power_rate'], axis=1,inplace=True)
+#test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
+features5_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
+
+features5_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*91, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*91+2, unit='D')))]
+final_features5 = pd.merge(features5_mergeDataset_add,features5_Y,on='day_of_week', how='left')
+final_features5.dropna(inplace=True)
+
+
+print "make all features dataset ........."
+features1_matrix = final_features1.drop(['user_id', 'day_of_week', 'predict_date'], axis=1).as_matrix()
+features2_matrix = final_features2.drop(['user_id', 'day_of_week', 'predict_date'], axis=1).as_matrix()
+features3_matrix = final_features3.drop(['user_id', 'day_of_week', 'predict_date'], axis=1).as_matrix()
+features4_matrix = final_features4.drop(['user_id', 'day_of_week', 'predict_date'], axis=1).as_matrix()
+features5_matrix = final_features5.drop(['user_id', 'day_of_week', 'predict_date'], axis=1).as_matrix()
+
+print "predicting ................."
+print "predict 1st week ................."
+predict_Y1 = xgb_model.predict(features1_matrix)
+final_features1['predict_power_consumption'] = predict_Y1
+
+print "predict 2st week ................."
+predict_Y2 = xgb_model.predict(features2_matrix)
+final_features2['predict_power_consumption'] = predict_Y2
+
+print "predict 3st week ................."
+predict_Y3 = xgb_model.predict(features3_matrix)
+final_features3['predict_power_consumption'] = predict_Y3
+
+print "predict 4st week ................."
+predict_Y4 = xgb_model.predict(features4_matrix)
+final_features4['predict_power_consumption'] = predict_Y4
+
+print "predict 5st week ................."
+predict_Y5 = xgb_model.predict(features5_matrix)
+final_features5['predict_power_consumption'] = predict_Y5
+
+print "groupby for final_needdataset ................."
+final_needdataset1 = final_features1.groupby('predict_date')['predict_power_consumption'].agg(sum).reset_index()
+final_needdataset2 = final_features2.groupby('predict_date')['predict_power_consumption'].agg(sum).reset_index()
+final_needdataset3 = final_features3.groupby('predict_date')['predict_power_consumption'].agg(sum).reset_index()
+final_needdataset4 = final_features4.groupby('predict_date')['predict_power_consumption'].agg(sum).reset_index()
+final_needdataset5 = final_features5.groupby('predict_date')['predict_power_consumption'].agg(sum).reset_index()
+
+print "concat all final_needdataset*  (1--5) ................"
+final_needdataset = pd.concat([final_needdataset1, final_needdataset2, final_needdataset3, final_needdataset4, final_needdataset5], axis=0, ignore_index=True)
+
+print "save final_needdataset to Tianchi_power_predict_table.csv ............."
+final_needdataset.to_csv(u'/home/haven/Tianchi_power/Tianchi_power_predict_table.csv', header=True, index=False)
+
+
+
+
+
+
+
