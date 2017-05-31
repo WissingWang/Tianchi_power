@@ -13,6 +13,8 @@ import TransformByDOW
 
 
 
+
+
 print "loading dataset .............." 
 handledataset = pd.read_csv(u'/home/haven/Tianchi_power/Tianchi_power__boxhandle15_DayOfWeek.csv.csv')
 groupbydataset = TransformByDOW.transformByDayOfWeek()
