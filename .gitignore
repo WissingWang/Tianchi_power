@@ -1,4 +1,6 @@
 *.pdf
 *.csv
-*.pyc
+*.py[c~]
+*.txt~
+.gitignore~
 *.*~^
