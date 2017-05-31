@@ -10,6 +10,9 @@ from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import LassoCV
 import TransformByDOW
 
+
+
+
 print "loading dataset .............." 
 handledataset = pd.read_csv(u'/home/haven/Tianchi_power/Tianchi_power__boxhandle15_DayOfWeek.csv.csv')
 groupbydataset = TransformByDOW.transformByDayOfWeek()
