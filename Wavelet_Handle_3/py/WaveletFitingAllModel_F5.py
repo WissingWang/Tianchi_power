@@ -18,7 +18,7 @@ print "transform date to datetime .............."
 handledataset.record_date = pd.to_datetime(handledataset.record_date)
 
 print "select train1 dataset ............."
-train1 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F4_Result/train1AndPredictY.csv')
+train1 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/F4_Result/train1AndPredictY.csv')
 train1_MeanStdSum = train1.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train1_MeanStdSum['power_rate'] = train1_MeanStdSum.power_sum / train1_MeanStdSum.power_sum.sum()
 train1_DOW_MeanStdSum = train1.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -42,7 +42,7 @@ final_train1.dropna(inplace=True)
 
 
 print "select train2 dataset ............."
-train2 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F4_Result/train2AndPredictY.csv')
+train2 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/F4_Result/train2AndPredictY.csv')
 train2_MeanStdSum = train2.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train2_MeanStdSum['power_rate'] = train2_MeanStdSum.power_sum / train2_MeanStdSum.power_sum.sum()
 train2_DOW_MeanStdSum = train2.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -67,7 +67,7 @@ final_train2.dropna(inplace=True)
 
 
 print "select train3 dataset ............."
-train3 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F4_Result/train3AndPredictY.csv')
+train3 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/F4_Result/train3AndPredictY.csv')
 train3_MeanStdSum = train3.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train3_MeanStdSum['power_rate'] = train3_MeanStdSum.power_sum / train3_MeanStdSum.power_sum.sum()
 train3_DOW_MeanStdSum = train3.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -92,7 +92,7 @@ final_train3.dropna(inplace=True)
 
 
 print "select train4 dataset ............."
-train4 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F4_Result/train4AndPredictY.csv')
+train4 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/F4_Result/train4AndPredictY.csv')
 train4_MeanStdSum = train4.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train4_MeanStdSum['power_rate'] = train4_MeanStdSum.power_sum / train4_MeanStdSum.power_sum.sum()
 train4_DOW_MeanStdSum = train4.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -116,7 +116,7 @@ final_train4.dropna(inplace=True)
 
 
 print "select test dataset ............."
-test = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F4_Result/testAndPredictY.csv')
+test = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/F4_Result/testAndPredictY.csv')
 test_MeanStdSum = train4.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 test_MeanStdSum['power_rate'] = test_MeanStdSum.power_sum / test_MeanStdSum.power_sum.sum()
 test_DOW_MeanStdSum = test.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
