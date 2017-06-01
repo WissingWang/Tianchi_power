@@ -12,14 +12,14 @@ import TransformByDOW
 import AllModelWaveletTransformByDOW
 
 print "loading model ..........."
-F1_xgb_model = joblib.load("../model/F1_xgb_model.m")
-F2_xgb_model = joblib.load("../model/F2_xgb_model.m")
-F3_xgb_model = joblib.load("../model/F3_xgb_model.m")
-F4_xgb_model = joblib.load("../model/F4_xgb_model.m")
-F5_xgb_model = joblib.load("../model/F5_xgb_model.m")
+F1_xgb_model = joblib.load("F1_xgb_model.m")
+F2_xgb_model = joblib.load("F2_xgb_model.m")
+F3_xgb_model = joblib.load("F3_xgb_model.m")
+F4_xgb_model = joblib.load("F4_xgb_model.m")
+F5_xgb_model = joblib.load("F5_xgb_model.m")
 
 print "create the part dataset of predicting ........."
-rng = pd.date_range('9/1/2016', '9/30/2016')
+rng = pd.date_range('7/28/2016', '8/26/2016')
 predicteData = pd.DataFrame(rng, columns=['predict_date'])
 def addDayOfWeek(x):
     return x.weekday() +1
@@ -36,7 +36,7 @@ handledataset.record_date = pd.to_datetime(handledataset.record_date)
 
 
 print "select features about 1st week............."
-features1 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*68, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*87, unit='D')))]
+features1 = handledataset[(handledataset.record_date>=pd.to_datetime('2015-01-01')+pd.to_timedelta(7*70, unit='D')) & (handledataset.record_date<(pd.to_datetime('2015-01-01')+pd.to_timedelta(7*82, unit='D')))]
 features1_MeanStdSum = features1.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 features1_MeanStdSum['power_rate'] = features1_MeanStdSum.power_sum / features1_MeanStdSum.power_sum.sum()
 features1_DOW_MeanStdSum = features1.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -55,7 +55,7 @@ features1_mergeDataset_add = pd.merge(features1_mergeDataset, features1_dayofwee
 #test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
 features1_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
 
-features1_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*87, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*88, unit='D')))]
+features1_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*82, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*83, unit='D')))]
 final_features1 = pd.merge(features1_mergeDataset_add,features1_Y,on='day_of_week', how='left')
 
 final_features1_Y = final_features1[['user_id', 'day_of_week', 'predict_date']]
@@ -93,7 +93,7 @@ features2_mergeDataset_add = pd.merge(features2_mergeDataset,features2_dayofweek
 #test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
 features2_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
 
-features2_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*88, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*89, unit='D')))]
+features2_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*83, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*84, unit='D')))]
 final_features2 = pd.merge(features2_mergeDataset_add,features2_Y,on='day_of_week', how='left')
 
 final_features2_Y = final_features2[['user_id', 'day_of_week', 'predict_date']]
@@ -128,7 +128,7 @@ features3_mergeDataset_add = pd.merge(features3_mergeDataset,features3_dayofweek
 #test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
 features3_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
 
-features3_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*89, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*90, unit='D')))]
+features3_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*84, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*85, unit='D')))]
 final_features3 = pd.merge(features3_mergeDataset_add,features3_Y,on='day_of_week', how='left')
 
 final_features3_Y = final_features3[['user_id', 'day_of_week', 'predict_date']]
@@ -163,7 +163,7 @@ features4_mergeDataset_add = pd.merge(features4_mergeDataset,features4_dayofweek
 #test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
 features4_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
 
-features4_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*90, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*91, unit='D')))]
+features4_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*85, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*86, unit='D')))]
 final_features4 = pd.merge(features4_mergeDataset_add,features4_Y,on='day_of_week', how='left')
 
 final_features4_Y = final_features4[['user_id', 'day_of_week', 'predict_date']]
@@ -197,7 +197,7 @@ features5_mergeDataset_add = pd.merge(features5_mergeDataset,features5_dayofweek
 #test_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum'], axis=1,inplace=True)
 features5_mergeDataset_add.drop(['DOW_power_sum', 'DOW_allsum', 'power_sum', 'DOW_powaer_rate', 'power_rate'], axis=1,inplace=True)
 
-features5_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*91, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*91+2, unit='D')))]
+features5_Y = predicteData[(predicteData.predict_date>=(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*86, unit='D'))) & (predicteData.predict_date<(pd.to_datetime('2015-01-01') + pd.to_timedelta(7*86+2, unit='D')))]
 final_features5 = pd.merge(features5_mergeDataset_add,features5_Y,on='day_of_week', how='left')
 final_features5.dropna(inplace=True)
 
@@ -226,13 +226,9 @@ print "concat all final_needdataset*  (1--5) ................"
 final_needdataset = pd.concat([final_needdataset1, final_needdataset2, final_needdataset3, final_needdataset4, final_needdataset5], axis=0, ignore_index=True)
 
 print "save final_needdataset to Tianchi_power_predict_table.csv ............."
-final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/result_CSV/AllModel_Tianchi_power_predict_table.csv', header=True, index=False)
+final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/AllModel_Tianchi_power_predict_table_test.csv', header=True, index=False)
 
-def test2(x):
-    return x.strftime('%Y%m%d')
-final_needdataset.predict_date = final_needdataset.predict_date.apply(test2)
-final_needdataset.predict_power_consumption = np.round(list(final_needdataset.predict_power_consumption)).astype('int')
-final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/result_CSV/Tianchi_power_predict_table.csv', header=True, index=False)
+
 
 
 
