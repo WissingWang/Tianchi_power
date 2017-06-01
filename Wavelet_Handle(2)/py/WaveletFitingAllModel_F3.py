@@ -11,9 +11,6 @@ from sklearn.feature_selection import SelectFromModel
 import AllModelWaveletTransformByDOW
 
 
-print "loading model ..........."
-F2_xgb_model = joblib.load("F2_xgb_model.m")
-
 print "loading dataset .............." 
 handledataset = pd.read_csv(u'/home/haven/Tianchi_power/Tianchi_power__boxhandle15_DayOfWeek.csv')
 
@@ -21,7 +18,7 @@ print "transform date to datetime .............."
 handledataset.record_date = pd.to_datetime(handledataset.record_date)
 
 print "select train1 dataset ............."
-train1 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F2_Result/train1AndPredictY.csv')
+train1 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F2_Result/train1AndPredictY.csv')
 train1_MeanStdSum = train1.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train1_MeanStdSum['power_rate'] = train1_MeanStdSum.power_sum / train1_MeanStdSum.power_sum.sum()
 train1_DOW_MeanStdSum = train1.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -45,7 +42,7 @@ final_train1 = pd.merge(train1_mergeDataset_add,train1_Y,on=['user_id', 'day_of_
 
 
 print "select train2 dataset ............."
-train2 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F2_Result/train2AndPredictY.csv')
+train2 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F2_Result/train2AndPredictY.csv')
 train2_MeanStdSum = train2.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train2_MeanStdSum['power_rate'] = train2_MeanStdSum.power_sum / train2_MeanStdSum.power_sum.sum()
 train2_DOW_MeanStdSum = train2.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -70,7 +67,7 @@ final_train2 = pd.merge(train2_mergeDataset_add,train2_Y,on=['user_id', 'day_of_
 
 
 print "select train3 dataset ............."
-train3 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F2_Result/train3AndPredictY.csv')
+train3 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F2_Result/train3AndPredictY.csv')
 train3_MeanStdSum = train3.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train3_MeanStdSum['power_rate'] = train3_MeanStdSum.power_sum / train3_MeanStdSum.power_sum.sum()
 train3_DOW_MeanStdSum = train3.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -95,7 +92,7 @@ final_train3 = pd.merge(train3_mergeDataset_add,train3_Y,on=['user_id', 'day_of_
 
 
 print "select train4 dataset ............."
-train4 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F2_Result/train4AndPredictY.csv')
+train4 = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F2_Result/train4AndPredictY.csv')
 train4_MeanStdSum = train4.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 train4_MeanStdSum['power_rate'] = train4_MeanStdSum.power_sum / train4_MeanStdSum.power_sum.sum()
 train4_DOW_MeanStdSum = train4.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -120,7 +117,7 @@ final_train4 = pd.merge(train4_mergeDataset_add,train4_Y,on=['user_id', 'day_of_
 
 
 print "select test dataset ............."
-test = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F2_Result/testAndPredictY.csv')
+test = pd.read_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F2_Result/testAndPredictY.csv')
 test_MeanStdSum = train4.groupby(['user_id'])['power_consumption'].agg({'power_mean':np.mean, 'power_std':np.std, 'power_sum':np.sum}).reset_index()
 test_MeanStdSum['power_rate'] = test_MeanStdSum.power_sum / test_MeanStdSum.power_sum.sum()
 test_DOW_MeanStdSum = test.groupby(['user_id','day_of_week'])['power_consumption'].agg({'DOW_power_mean':np.mean, 'DOW_power_std':np.std, 'DOW_power_sum':np.sum}).reset_index()
@@ -182,7 +179,7 @@ xgb_model.fit(train_X, train_Y)
 
 input_flag = raw_input("Do you want to save the model by train? Input[y/n]:")
 if input_flag == 'y':
-	joblib.dump(xgb_model, "F3_xgb_model.m")
+	joblib.dump(xgb_model, "../model/F3_xgb_model.m")
 print "predict ............"
 predict_Y = xgb_model.predict(test_matrix_X)
 predict_Y = np.round(predict_Y).astype(int)
@@ -204,29 +201,29 @@ train1_matrix_X = train1_matrix[:,:-1]
 train1_predict_Y = xgb_model.predict(train1_matrix_X)
 train1_Y['power_consumption'] = train1_predict_Y
 train1AndPredictY = pd.concat([train1, train1_Y], axis=0, ignore_index=True)
-train1AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F3_Result/train1AndPredictY.csv', header=True, index=False)
+train1AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F3_Result/train1AndPredictY.csv', header=True, index=False)
 
 train2_matrix_X = train2_matrix[:,:-1]
 train2_predict_Y = xgb_model.predict(train2_matrix_X)
 train2_Y['power_consumption'] = train2_predict_Y
 train2AndPredictY = pd.concat([train2, train2_Y], axis=0, ignore_index=True)
-train2AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F3_Result/train2AndPredictY.csv', header=True, index=False)
+train2AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F3_Result/train2AndPredictY.csv', header=True, index=False)
 
 train3_matrix_X = train3_matrix[:,:-1]
 train3_predict_Y = xgb_model.predict(train3_matrix_X)
 train3_Y['power_consumption'] = train3_predict_Y
 train3AndPredictY = pd.concat([train3, train3_Y], axis=0, ignore_index=True)
-train3AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F3_Result/train3AndPredictY.csv', header=True, index=False)
+train3AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F3_Result/train3AndPredictY.csv', header=True, index=False)
 
 train4_matrix_X = train4_matrix[:,:-1]
 train4_predict_Y = xgb_model.predict(train4_matrix_X)
 train4_Y['power_consumption'] = train4_predict_Y
 train4AndPredictY = pd.concat([train4, train4_Y], axis=0, ignore_index=True)
-train4AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F3_Result/train4AndPredictY.csv', header=True, index=False)
+train4AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F3_Result/train4AndPredictY.csv', header=True, index=False)
 
 test_Y['power_consumption'] = predict_Y
 testAndPredictY = pd.concat([test, test_Y], axis=0, ignore_index=True)
-testAndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F3_Result/testAndPredictY.csv', header=True, index=False)
+testAndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F3_Result/testAndPredictY.csv', header=True, index=False)
 
 
 

@@ -12,11 +12,11 @@ import TransformByDOW
 import AllModelWaveletTransformByDOW
 
 print "loading model ..........."
-F1_xgb_model = joblib.load("F1_xgb_model.m")
-F2_xgb_model = joblib.load("F2_xgb_model.m")
-F3_xgb_model = joblib.load("F3_xgb_model.m")
-F4_xgb_model = joblib.load("F4_xgb_model.m")
-F5_xgb_model = joblib.load("F5_xgb_model.m")
+F1_xgb_model = joblib.load("../model/F1_xgb_model.m")
+F2_xgb_model = joblib.load("../model/F2_xgb_model.m")
+F3_xgb_model = joblib.load("../model/F3_xgb_model.m")
+F4_xgb_model = joblib.load("../model/F4_xgb_model.m")
+F5_xgb_model = joblib.load("../model/F5_xgb_model.m")
 
 print "create the part dataset of predicting ........."
 rng = pd.date_range('9/1/2016', '9/30/2016')
@@ -226,7 +226,7 @@ print "concat all final_needdataset*  (1--5) ................"
 final_needdataset = pd.concat([final_needdataset1, final_needdataset2, final_needdataset3, final_needdataset4, final_needdataset5], axis=0, ignore_index=True)
 
 print "save final_needdataset to Tianchi_power_predict_table.csv ............."
-final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/AllModel_Tianchi_power_predict_table.csv', header=True, index=False)
+final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/result_CSV/AllModel_Tianchi_power_predict_table.csv', header=True, index=False)
 
 
 

@@ -183,7 +183,7 @@ xgb_model.fit(train_X, train_Y)
 
 input_flag = raw_input("Do you want to save the model by train? Input[y/n]:")
 if input_flag == 'y':
-	joblib.dump(xgb_model, "F1_xgb_model.m")
+	joblib.dump(xgb_model, "../model/F1_xgb_model.m")
 print "predict ............"
 predict_Y = xgb_model.predict(test_matrix_X)
 predict_Y = np.round(predict_Y).astype(int)
@@ -206,26 +206,26 @@ train1_matrix_X = train1_matrix[:,:-1]
 train1_predict_Y = xgb_model.predict(train1_matrix_X)
 train1_Y['power_consumption'] = train1_predict_Y
 train1AndPredictY = pd.concat([train1, train1_Y], axis=0, ignore_index=True)
-train1AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F1_Result/train1AndPredictY.csv', header=True, index=False)
+train1AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F1_Result/train1AndPredictY.csv', header=True, index=False)
 
 train2_matrix_X = train2_matrix[:,:-1]
 train2_predict_Y = xgb_model.predict(train2_matrix_X)
 train2_Y['power_consumption'] = train2_predict_Y
 train2AndPredictY = pd.concat([train2, train2_Y], axis=0, ignore_index=True)
-train2AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F1_Result/train2AndPredictY.csv', header=True, index=False)
+train2AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F1_Result/train2AndPredictY.csv', header=True, index=False)
 
 train3_matrix_X = train3_matrix[:,:-1]
 train3_predict_Y = xgb_model.predict(train3_matrix_X)
 train3_Y['power_consumption'] = train3_predict_Y
 train3AndPredictY = pd.concat([train3, train3_Y], axis=0, ignore_index=True)
-train3AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F1_Result/train3AndPredictY.csv', header=True, index=False)
+train3AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F1_Result/train3AndPredictY.csv', header=True, index=False)
 
 train4_matrix_X = train4_matrix[:,:-1]
 train4_predict_Y = xgb_model.predict(train4_matrix_X)
 train4_Y['power_consumption'] = train4_predict_Y
 train4AndPredictY = pd.concat([train4, train4_Y], axis=0, ignore_index=True)
-train4AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F1_Result/train4AndPredictY.csv', header=True, index=False)
+train4AndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F1_Result/train4AndPredictY.csv', header=True, index=False)
 
 test_Y['power_consumption'] = predict_Y
 testAndPredictY = pd.concat([test, test_Y], axis=0, ignore_index=True)
-testAndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle/F1_Result/testAndPredictY.csv', header=True, index=False)
+testAndPredictY.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/F1_Result/testAndPredictY.csv', header=True, index=False)
