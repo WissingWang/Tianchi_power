@@ -228,13 +228,13 @@ print "concat all final_needdataset*  (1--5) ................"
 final_needdataset = pd.concat([final_needdataset1, final_needdataset2, final_needdataset3, final_needdataset4, final_needdataset5], axis=0, ignore_index=True)
 
 print "save final_needdataset to Tianchi_power_predict_table.csv ............."
-final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/result_CSV/AllModel_Tianchi_power_predict_table.csv', header=True, index=False)
+final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/result_CSV/AllModel_Tianchi_power_predict_table.csv', header=True, index=False)
 
 def test2(x):
     return x.strftime('%Y%m%d')
 final_needdataset.predict_date = final_needdataset.predict_date.apply(test2)
 final_needdataset.predict_power_consumption = np.round(list(final_needdataset.predict_power_consumption)).astype('int')
-final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle(2)/result_CSV/Tianchi_power_predict_table.csv', header=True, index=False)
+final_needdataset.to_csv(u'/home/haven/Tianchi_power/Wavelet_Handle_3/result_CSV/Tianchi_power_predict_table.csv', header=True, index=False)
 
 
 
