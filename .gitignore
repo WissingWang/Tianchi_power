@@ -3,3 +3,4 @@
 *.py[c~]
 *.txt~
 .gitignore~
+*.csv#
