@@ -1,0 +1,60 @@
+model_F1的构造
+	[Parallel(n_jobs=1)]: Done 540 out of 540 | elapsed: 76.6min finished
+	Best Score :  0.990629828794
+	Best Params :  {'n_estimators': 200, 'objective': 'reg:tweedie', 'learning_rate': 0.15, 'max_delta_step': 1, 'max_depth': 5}
+	predict ............
+	MSE =  5183695.42071
+	MeanSum =  0.250553644981
+	corrcoef =  [[ 1.          0.99835577]
+				 [ 0.99835577  1.        ]]
+
+model_F2的构造
+	[Parallel(n_jobs=1)]: Done 540 out of 540 | elapsed: 95.0min finished
+	Best Score :  0.989570086478
+	Best Params :  {'n_estimators': 150, 'objective': 'reg:tweedie', 'learning_rate': 0.15, 'max_delta_step': 1, 'max_depth': 5}
+	predict ............
+	MSE =  305260958.986
+	MeanSum =  0.252091537828
+	corrcoef =  [[ 1.          0.90419902]
+				 [ 0.90419902  1.        ]]
+
+model_F3的构造
+	[Parallel(n_jobs=1)]: Done 540 out of 540 | elapsed: 107.3min finished
+	Best Score :  0.93465248872
+	Best Params :  {'n_estimators': 200, 'objective': 'reg:tweedie', 'learning_rate': 0.15, 'max_delta_step': 1, 'max_depth': 2}
+	predict ............
+	MSE =  48069338.268
+	MeanSum =  0.280050957038
+	corrcoef =  [[ 1.          0.97562236]
+				 [ 0.97562236  1.        ]]
+
+
+
+model_F4的构造
+	[Parallel(n_jobs=1)]: Done 540 out of 540 | elapsed: 111.4min finished
+	Best Score :  0.969688894296
+	Best Params :  {'n_estimators': 200, 'objective': 'reg:tweedie', 'learning_rate': 0.1, 'max_delta_step': 1, 'max_depth': 3}
+	predict ............
+	MSE =  18048331.1092
+	MeanSum =  0.266641554953
+	corrcoef =  [[ 1.          0.98902884]
+				 [ 0.98902884  1.        ]]
+
+model_F5的构造
+	[Parallel(n_jobs=1)]: Done 540 out of 540 | elapsed: 35.2min finished
+	Best Score :  0.964038758103
+	Best Params :  {'n_estimators': 200, 'objective': 'reg:tweedie', 'learning_rate': 0.15, 'max_delta_step': 1, 'max_depth': 3}
+	predict ............
+	MSE =  31470271.1169
+	MeanSum =  0.281197783922
+	corrcoef =  [[ 1.          0.98786852]
+				 [ 0.98786852  1.        ]]
+
+
+
+
+
+
+
+
+
